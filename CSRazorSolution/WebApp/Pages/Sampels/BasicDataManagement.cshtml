@@ -1,0 +1,72 @@
+﻿@page
+@model WebApp.Pages.Sampels.BasicDataManagementModel
+@{
+    //add my tab title for the browser
+    ViewData["Title"] = "Basic Data Management";
+}
+<h1>Basic Data Management</h1>
+
+@*
+    <form> arguments: method - indicates how data is tranfered to server
+                        get - visible on URL in plain text 
+                        post - embedded within the form objects sent to the server, not visible
+                        action - directs the server to the page to process form, optional, missing or =" " goes to current page
+
+    Contorls:label input button
+    
+    <lable> does not need arguments, can have helper tags sush as asp-for, asp-validate depemding on css stylesheets, you can get different results
+
+    <input> use to accept input from the page user, has various types of acceptable inputs(type="")
+            can tie contorl ot a property on the ModelPage directly by using the helper tag asp-for="propertyname"
+
+    <textarea> use to accept input from page user
+               use to accpet large amounts of text information genrally 
+               entered as aset of lines or one long continuous string
+               can set the rows="x" for the vertical height and cols="x" for the horizonatal  number of characters per line
+               requiers a paired set of tags (<xxx>  </xxx>)
+
+    <select>/<option> use to display a lost of choices to thepage user from which to select
+                      other names: cmobobox, dropdownlist, selectlist
+                      this control can have an optional "prompt listy of choices
+                      the control requires a paired set of tags <select></select>
+                      the paired set of tags <option></option>
+                      each line in the list is a set of options tags
+                      this control can be hard coded with choices 
+                      this control can be generated dynamically using a data collection (List<T>) from a database.
+                    <option value="returndatavalue"> displayed text </option>
+
+    <button> three types:
+                submit: sens the form to server for processing
+                reset: locally clears the form and does NOT send to server for processing
+
+
+*@
+
+<form method="post" >
+    <label>
+        Enter a number <input type="number" asp-for="Num"/>
+    </label>
+
+    <label>
+        This is a textarea for a great deal of text
+        <textarea asp-for="MassText" rows="5" cols="100"></textarea>
+    </label>
+    <label>
+        Select a favourite coures from the drop down list
+        <select asp-for="FavouriteCourse">
+            <option value="0">Select...</option>
+            <option value="1008">COMP1008</option>
+            <option value="1012">CPSC1012</option>
+            <option value="1017">COMP1017</option>
+            <option value="1517">CPSC1517</option>
+        </select>
+    </label>
+    <button type="submit" id="jsIdentitier"  name="RequestObjectIdentifier">
+        Press me (sbumit form)
+    </button>
+        <button type="submit" asp-page-handler="SecondButton">
+        Press you (sbumit form to OnPostSecondButton)
+    </button>
+</form>
+
+@Model.FeedBack

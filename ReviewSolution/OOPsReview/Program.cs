@@ -2,6 +2,7 @@
 
 //this class is by deafult in the namespace of the porjecrt:OOPsReview
 using OOPsReview.Data;
+using System.Text.Json;
 
 //Conosle is a static class
 //you cant not create your own instance of a static class
@@ -80,6 +81,38 @@ if (Employment.TryParse(theRecord, out theParsedRecord))
 }
 //if the TryParse failed you would be handling it via your user findly error handling code
 
+//File I/O
+
+//writing a comma sperated value file
+
+//string pathname = WriteCSVFile();
+
+//read a comma separeted value file
+const string PATHNAME = "../../../Employment.csv";
+const string JSONPATHNAME = "../../../Employment.json";
+List<Employment> jobs = ReadCSVFile(PATHNAME);
+Console.WriteLine($"Results of reading the csv file at : {PATHNAME}");
+foreach(Employment job in jobs)
+{
+    Console.WriteLine($"Title:{job.Title} Level: {job.Level} Year: {job.Years}");
+}
+
+//writing a JSON file
+//me is built above
+SaveAsJason(me, JSONPATHNAME);
+//Read a JSON file
+Person jsonME = ReadAsJson(JSONPATHNAME);
+Console.WriteLine("Output from reading a json file:");
+Console.WriteLine($"{jsonME.FirstName},{jsonME.LastName}, lives at {jsonME.Address.ToString()},having a job count of  {jsonME.NumberOfPositions}");
+Console.WriteLine("Jobs: output via foreach loop");
+foreach (var item in jsonME.EmploymentPositions)
+{
+    if(item.Years >0)
+    Console.WriteLine(item.ToString());
+}
+
+Console.WriteLine("Jobs: output via for loop");
+
 
 
 void CreateJob(ref Employment job)
@@ -113,6 +146,7 @@ void CreateJob(ref Employment job)
         Console.WriteLine(ex.Message);
     }
 }
+
 ResidentAddress CreateAddress()
     {
         ResidentAddress address = new ResidentAddress(10706, "106 st", "", "", "Edmonton", "AB");
@@ -141,4 +175,165 @@ Person CreatePerson (Employment job, ResidentAddress address)
     employment = new Employment("Department IT Head", SupervisoryLevel.DepartmentHead, 6.8);
     me.AddEmployment(employment);
     return me;
+}
+
+string WriteCSVFile()
+{
+    string pathname = "";
+    try
+    {
+        List<Employment> jobs = new List<Employment>();
+            jobs.Add(new Employment("trainee", SupervisoryLevel.Entry, 0.5));
+            jobs.Add(new Employment("worker", SupervisoryLevel.TeamLeader, 3.5));
+            jobs.Add(new Employment("lead", SupervisoryLevel.TeamLeader, 7.4));
+            jobs.Add(new Employment("dh new projects", SupervisoryLevel.DepartmentHead, 1.0));
+
+        //create a list of comma seperated value strings
+        //the contents of each string will be 3 values of Employment
+        List<string> csvline = new();
+
+        //place all the instances of Employmnent in the collection of jobs
+        // in the csvlibes using .ToString() of Employment Class
+
+        foreach (var item in jobs)
+        {
+            csvline.Add(item.ToString());  
+        }
+        //write to a text file the csv lines
+        //each line represents a Employment instance
+        //you could use StreamWriter
+        //HOWEEVER WITHIN THE FILE CLASS TEHRE IS A METHOD THAT OUTPUTS A LIST OF STRINGS ALLL with ONE COMMAND.
+        //There is no need for Streamwriter isntance.
+        //the path name is the minimum for the command
+        //the file by default will be created in the same folder as your .exe file
+        //YOU can alter the path name using relative addressing
+
+        pathname = "../../../Employment.csv";
+        File.WriteAllLines(pathname, csvline);
+        Console.WriteLine($"check out the CSV file at: {Path.GetFullPath(pathname)}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+    return Path.GetFullPath(pathname);
+}
+
+List<Employment> ReadCSVFile(string pathname)
+{
+    List<Employment> employments = new List<Employment>();
+    //use this variuble repeatedly to hold a new instance of Employment
+    // as i read and Parse the CSV file.
+    Employment job = null;
+    //this try/catch error handling is for system I/O errors while reading the file
+    try
+    {
+        //Read the CSV file using File.ReadAllLines()
+        //thus No need to creat a StreamReader.
+        //ReadAllLines returns an aaray of strings each string representing one line in your CSV file
+        string[] csvFileInput = File.ReadAllLines(pathname);
+
+
+        //process EACH line in the file
+        foreach(string csvLine in csvFileInput)
+        {
+            //as you process each line we will use the TryParse of Employment
+            // this will return an instance of Employment IF the data is valid 
+            //IF data is not valid Employment will throw various errors
+            //we DO NOT want to stop processing the strings IF an error is discovered
+            //THEREFORE we WILL have a try/catch WITHIN this loop
+            try
+            {
+                //attempt to convert a comma separate value string into an instance of Employment(parse the data)
+                bool converted = Employment.TryParse(csvLine, out job);
+                //test if the parsing was successful
+                //the way this logic is set up, the testing is unnecessary
+                //why? IF THE PARSE FAILS AN ERROR WOULD HAVE BE THROWN
+                //thus processing will have jumped to a catch
+                //why do the test then
+                //consider that on a successful parse you may have additional logic to perform.
+                if(converted)
+                {
+                    employments.Add(job);
+                }
+            }
+            catch(FormatException ex)
+            {
+                Console.WriteLine($"Format error: {ex.Message}");
+            }
+            catch (ArgumentNullException ex)
+            {
+                Console.WriteLine($"Argument error: {ex.Message}");
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Console.WriteLine($"Out of Range error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown error: {ex.Message}");
+            }
+
+        }
+
+
+    }
+    catch(IOException ex)
+    {
+        Console.WriteLine($"Reading CSV file error: {ex.Message}");
+    }
+    catch(Exception gnrl)
+    {
+        Console.WriteLine(gnrl.Message);
+    }
+    return employments;
+}
+
+void SaveAsJason(Person me, string pathname)
+{
+    // the term use to read and wite Json files is Serialization
+    //the ckasses use are referred to as serializers
+    //with writing we can make the file produce more readable format by using indentation
+    //Json is very good at using objects and properties however it
+    // needs help/promptaing to work better with fields: options INcludeFields
+    // the term Serialize is generally used to indicate writing
+    //instance instatiation 
+    JsonSerializerOptions options = new JsonSerializerOptions
+    {
+        WriteIndented = true,
+        IncludeFields = true
+    };
+    try
+    {
+        //Serialize the instance of Person
+        //produce a string of serialized data 
+        string jsonstring = JsonSerializer.Serialize<Person>(me, options);
+        //output the Json string to your file indicated in the path
+        //use WriteAllText here because there is ONLY a SINGLE line of text unlike writing a csv file which has an array of strings (WriteAllLines)
+        File.WriteAllText(pathname, jsonstring);
+    }
+    catch(Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+}
+
+Person ReadAsJson(string pathname)
+{
+    Person person = null;
+    try
+    {
+        //bring in the text form the file
+        string jsonstring = File.ReadAllText(pathname);
+        // use the deserializer to unpack the json string into
+        // the expected structure <Person>
+        person = JsonSerializer.Deserialize<Person>(jsonstring); 
+
+
+    }
+     catch(Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+    return person;
 }

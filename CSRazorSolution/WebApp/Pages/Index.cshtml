@@ -1,0 +1,49 @@
+﻿@page
+@model IndexModel //indicates the class name of the PageModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@*
+    the web page is made up of 2 major components:
+    a) the layput page located in the Pages/Shared as a file called _Layout 
+    b) the content page 
+
+    The content page should be placesd in the /Pages folder
+    The content page(s) can be palced in a  subfolder(s) under the /Pages folder
+    The content page is made up of 2 components in separate files
+        a) xxxx.cshtml file - contains the html controls and display c# logic
+        b) xxxx.cshtml.cs file - this is the PageModel class file, this containes the logic to drive the web page
+                                  This does NOT coanint any html controls, this DOES conatin properties for the model class to transfer data between
+                                  your web controls and the model class properties.
+                                this file is some times referred to as "code - behind" 
+*@
+
+<div >
+    <h1 >Welcome to the world of Razor Pages</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<section class="setflex">
+    <div class="onethird">
+        <img src="~/img/WestWind.png" alt="full west wind logo" />
+
+    </div>
+    <div>
+        <p ><span style="font-size:large"; color:firebrick;>Thumbnail</span>
+            An imagne taht is usually a small version of another image. Used where a small image gives meaning and is purposful</p>
+            <p><span style="font-size:large"; color:firebrick;>Logo</span>
+                An image that is usaully a branding image for company or organization.</p>
+    </div>
+</section>
+
+
+@if(string.IsNullOrWhiteSpace(Model.MyName))
+{
+    <p>the world of Razor PAges is apperently in an odd state at this time.</p>
+}
+else
+{
+    @*inline styling*@
+    <p style="font-size: large; color:forestgreen;font-style:italic;">@Model.MyName</p>
+}

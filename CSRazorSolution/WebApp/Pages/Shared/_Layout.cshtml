@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    @*removed the link to bootstrap
+        add link to Holiday.css https://holidaycss.js.org/
+    *@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.9.8"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/WebApp.styles.css" asp-append-version="true" />
+    @*pacling my custom cscs as the last Styleshee as the head area*@
+        <link rel="stylesheet" href="~/css/mycss.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        @*Holiday.css*@
+        <nav >
+            <ul >
+                <li>
+                    <a asp-area="" asp-page="/Index"><img src="~/img/WestWindLogo.png" alt="WestWindLogo" /> <title>Go to Home</title>
+                        </a>
+                </li>
+                <li >
+                  <a asp-area="" asp-page="/Index">Home</a>
+                </li>
+                @*Sub menu*@
+                <li>
+                    <span>Samples</span>
+                    <ul>
+                        <li ><a asp-area="" asp-page="/Sampels/BasicDataManagement">Basics</a></li>
+                        <li > <a asp-area="" asp-page="/Sampels/Controls">Controls</a></li>                            
+                    </ul>
+                </li>
+
+                <li >
+                  <a asp-area="" asp-page="/Privacy">Privacy</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div >
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer >
+            &copy; 2022 - WebApp - NAIT CPSC-1517 all rights reserved<a asp-area="" asp-page="/Privacy">Privacy</a>
+
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
