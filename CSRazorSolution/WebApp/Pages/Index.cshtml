@@ -38,6 +38,7 @@
 </section>
 
 
+
 @if(string.IsNullOrWhiteSpace(Model.MyName))
 {
     <p>the world of Razor PAges is apperently in an odd state at this time.</p>
@@ -46,4 +47,16 @@ else
 {
     @*inline styling*@
     <p style="font-size: large; color:forestgreen;font-style:italic;">@Model.MyName</p>
+}
+
+<br/><br/>
+@if(Model.buildVersionInfo == null)
+{
+    <p style="font-weight:bold">Build Vesrion is Unknown</p>
+
+}
+else
+{
+    <p>DataBase vesrion: @Model.buildVersionInfo.Major . @Model.buildVersionInfo.Minor . @Model.buildVersionInfo.Build 
+                            was released on @Model.buildVersionInfo.ReleaseDate.ToShortDateString()</p>
 }
